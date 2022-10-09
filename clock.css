@@ -1,0 +1,33 @@
+.container {
+    text-align: center;
+    height: 70vh;
+    width: 70vw;
+    margin: 10vh;
+}
+
+.face {
+     position: absolute;   
+     z-index: 1;
+     height:70%;
+}
+
+.hour-hand {
+    position: absolute;   
+    z-index: 2;
+    height:70%;
+    transition: transform 1.2s ease-in-out;
+}
+
+.minute-hand {
+    position: absolute;   
+    z-index: 3;
+    height:70%;
+    transition: transform 1.2s ease-in-out;
+}
+
+.second-hand {
+    position: absolute;   
+    z-index: 4;
+    height:70%;
+    transition: transform 1.2s ease-in-out;
+}

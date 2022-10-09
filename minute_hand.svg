@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.0"
+   viewBox="0 0 1000 1000"
+   width="300"
+   height="300"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs4" />
+  <path
+     d="m 500,70 19,19 V 626 H 481 V 89 Z"
+     id="minutes">
+  </path>
+</svg>
