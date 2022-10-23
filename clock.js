@@ -1,10 +1,25 @@
 
-const updateIntervalSeconds = 58.5;
-const secPerMinute = 60;
-const msPerSec = 1000;
-const oneTickAngleDiff = 6;
-const hourAngleDiff = 30;
+// Math constants
+const circleDegrees = 360;
 
+// Time constants
+const secPerMinute = 60;
+const minPerHour = 60;
+const hoursPerClockCycle = 12;
+const msPerSec = 1000;
+
+// The minute hand runs slightly fast
+// https://en.wikipedia.org/wiki/Swiss_railway_clock#Technology
+const updateIntervalSeconds = 58.5;
+
+// A deflection of one minute/second tick on the clock
+const oneTickAngleDiff = circleDegrees / minPerHour;
+// A deflection of one hour tick on the clock
+const hourAngleDiff = circleDegrees / hoursPerClockCycle;
+// Additional amount the hour hand is deflected per minute
+const hoursAdditionalMinuteAngleDiff = hourAngleDiff / minPerHour
+
+// Update intervals for clock components in milliseconds
 secondUpdateInterval = (updateIntervalSeconds / secPerMinute) * msPerSec
 minuteUpdateInterval = secPerMinute * msPerSec
 
@@ -21,7 +36,9 @@ function setClock() {
 
     secondAngle = oneTickAngleDiff * now.getSeconds();
     minuteAngle = oneTickAngleDiff * now.getMinutes();
-    hourAngle = hourAngleDiff * now.getHours();
+    hourAngle = (hourAngleDiff * now.getHours()) + (hoursAdditionalMinuteAngleDiff * now.getMinutes());
+
+    console.log("additional hour diff: " + hoursAdditionalMinuteAngleDiff * now.getMinutes());
 
     console.log("seconds angle: " + secondAngle)
     console.log("minutes angle: " + minuteAngle)
@@ -32,17 +49,32 @@ function setClock() {
     hourHand.style.transform = 'rotate('+ hourAngle +'deg)';
 }
 
+function updateSecondHandUntilMinuteEnds() {
+    var secondHand = document.querySelector('#second-hand');
+    currentSecondAngle = Number(secondHand.style.transform.match(/\d+/)[0]);
+    var currentSecond = (currentSecondAngle / oneTickAngleDiff) % secPerMinute;
+
+    newSecondAngle = currentSecondAngle + oneTickAngleDiff;
+    secondHand.style.transform = 'rotate('+ newSecondAngle +'deg)';
+
+    if (currentSecond == secPerMinute - 1) {
+        // stop
+    } else {
+        setTimeout(updateSecondHandUntilMinuteEnds, secondUpdateInterval);
+    }
+}
+
 function updateMinute() {
     var minuteHand = document.querySelector('#minute-hand');
     currentMinuteAngle = Number(minuteHand.style.transform.match(/\d+/)[0])
-    var currentMinute = (currentMinuteAngle / oneTickAngleDiff) % secPerMinute
+    var currentMinute = (currentMinuteAngle / oneTickAngleDiff) % minPerHour
 
     const now = new Date();
     var newMinute = now.getMinutes();
 
     if (currentMinute != newMinute) {
         diff = newMinute - currentMinute
-        newMinuteAngle = currentMinuteAngle + (6 * diff)
+        newMinuteAngle = currentMinuteAngle + (oneTickAngleDiff * diff)
         minuteHand.style.transform = 'rotate('+ newMinuteAngle +'deg)';
     }
 }
@@ -63,21 +95,6 @@ function updateHour() {
     }
 }
 
-function updateSecondHandUntilMinuteEnds() {
-    var secondHand = document.querySelector('#second-hand');
-    currentSecondAngle = Number(secondHand.style.transform.match(/\d+/)[0]);
-    var currentSecond = (currentSecondAngle / oneTickAngleDiff) % secPerMinute;
-
-    newSecondAngle = currentSecondAngle + oneTickAngleDiff;
-    secondHand.style.transform = 'rotate('+ newSecondAngle +'deg)';
-
-    if (currentSecond == secPerMinute - 1) {
-        // stop
-    } else {
-        setTimeout(updateSecondHandUntilMinuteEnds, secondUpdateInterval);
-    }
-}
-
 function timeUntilNextMinuteBoundary() {
     // returns ms until next minute boundary
     var now = new Date();
@@ -95,7 +112,7 @@ function runClock() {
     // This tries to imitate the 'master timed' behavior of the DB clocks.
     // https://en.wikipedia.org/wiki/Swiss_railway_clock#Technology
     updateMinute();
-    updateHour();
+    //updateHour();
     var timeUntilNextMinute = timeUntilNextMinuteBoundary();
 
     setTimeout(runClock, timeUntilNextMinute)
