@@ -1,4 +1,3 @@
-
 // Math constants
 const circleDegrees = 360;
 
@@ -46,7 +45,7 @@ function calculateHourAngle() {
     var minutes = now.getMinutes();
     console.log("hours: " + hours);
     console.log("additional hour diff: " + hoursAdditionalMinuteAngleDiff * now.getMinutes());
-    return (hourAngleDiff * hours) + (hoursAdditionalMinuteAngleDiff * minutes);
+    return (hourAngleDiff * (hours % 12)) + (hoursAdditionalMinuteAngleDiff * minutes);
 }
 
 function setClock() {
@@ -91,33 +90,42 @@ function updateSecondHandUntilMinuteEnds() {
 
 function updateMinute() {
     var minuteHand = document.querySelector('#minute-hand');
-    currentMinuteAngle = Number(minuteHand.style.transform.match(/\d+/)[0])
-    var currentMinute = (currentMinuteAngle / oneTickAngleDiff) % minPerHour
+    
+    // Angle of the current minute hand.
+    // This can to arbitrarily above 360 as the hand keeps rotating.
+    var oldMinuteAngle = Number(minuteHand.style.transform.match(/\d+/)[0])
 
-    const now = new Date();
-    var newMinute = now.getMinutes();
+    // New angle the minute hand should be at out of 360
+    var newMinuteAngleMod360 = calculateMinutesAngle();
 
-    diff = newMinute - currentMinute
-    newMinuteAngle = currentMinuteAngle + (oneTickAngleDiff * diff)
+    diff = Math.abs(newMinuteAngleMod360 - oldMinuteAngle) % circleDegrees
+    newMinuteAngle = oldMinuteAngle + diff;
+
+    console.log("minute values:" + oldMinuteAngle + " " + newMinuteAngleMod360 + " " + diff + " " + newMinuteAngle);
+
     minuteHand.style.transform = 'rotate('+ newMinuteAngle +'deg)';
 }
 
 function updateHour() {
     var hourHand = document.querySelector('#hour-hand');
-    currentHourAngle = hourHand.style.transform.match(/\d+/)[0]
-    var currentHour = (currentHourAngle / hourAngleDiff) % 24
 
-    console.log("hour: " + currentHour)
+    // Angle of the current hour hand.
+    // This can to arbitrarily above 360 as the hand keeps rotating.
+    var oldHourAngle = Number(hourHand.style.transform.match(/\d+/)[0])
 
-    const now = new Date();
-    var newHour = now.getHours();
+    // New angle the hour hand should be at out of 360
+    var newHourAngleMod360 = calculateHourAngle();
 
-    newHourAngle = currentHourAngle + hourAngleDiff
+    diff = Math.abs(newHourAngleMod360 - oldHourAngle) % circleDegrees
+    newHourAngle = oldHourAngle + diff;
+
+    console.log("hour values:" + oldHourAngle + " " + newHourAngleMod360 + " " + diff + " " + newHourAngle);
+
     hourHand.style.transform = 'rotate('+ newHourAngle +'deg)';
 }
 
 function timeUntilNextMinuteBoundary() {
-    // returns ms until next minute boundary
+    // returns milliseconds until next minute boundary
     var now = new Date();
     var seconds = now.getSeconds();
     var milliseconds = now.getMilliseconds();
@@ -134,6 +142,7 @@ function runClock() {
     // https://en.wikipedia.org/wiki/Swiss_railway_clock#Technology
     var now = new Date();
     console.log("running runClock:" + now + " : " + now.getMilliseconds());
+    // In theory in every call of this except the first one ms should be near 0 or 1000
 
     updateMinute();
     updateHour();
