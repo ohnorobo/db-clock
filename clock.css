@@ -35,3 +35,9 @@ body {
     height:70%;
     transition: transform 1.2s ease-in-out;
 }
+
+.barrel {
+    position: absolute;   
+    z-index: 5;
+    height:70%;
+}

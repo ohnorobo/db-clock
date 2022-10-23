@@ -11,7 +11,6 @@
   <defs
      id="defs4" />
   <path
-     d="m 500,70 19,19 V 626 H 481 V 89 Z"
-     id="minutes">
-  </path>
+     d="m 500,70 19,19 V 526 H 481 V 89 Z"
+     id="minutes"/>
 </svg>
