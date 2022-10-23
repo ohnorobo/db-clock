@@ -98,7 +98,8 @@ function updateMinute() {
     // New angle the minute hand should be at out of 360
     var newMinuteAngleMod360 = calculateMinutesAngle();
 
-    diff = Math.abs(newMinuteAngleMod360 - oldMinuteAngle) % circleDegrees
+    diff = (newMinuteAngleMod360 - (oldMinuteAngle % circleDegrees));
+    if (diff < 0) {diff = diff + circleDegrees;}
     newMinuteAngle = oldMinuteAngle + diff;
 
     console.log("minute values:" + oldMinuteAngle + " " + newMinuteAngleMod360 + " " + diff + " " + newMinuteAngle);
@@ -116,7 +117,8 @@ function updateHour() {
     // New angle the hour hand should be at out of 360
     var newHourAngleMod360 = calculateHourAngle();
 
-    diff = Math.abs(newHourAngleMod360 - oldHourAngle) % circleDegrees
+    diff = (newHourAngleMod360 - (oldHourAngle % circleDegrees));
+    if (diff < 0) {diff = diff + circleDegrees;}
     newHourAngle = oldHourAngle + diff;
 
     console.log("hour values:" + oldHourAngle + " " + newHourAngleMod360 + " " + diff + " " + newHourAngle);
