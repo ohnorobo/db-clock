@@ -98,10 +98,10 @@ minuteUpdateInterval = secPerMinute * msPerSec
 
 var secondIntervalId;
 
-
 function updateClock() {
     // This tries to imitate the 'master timed' behavior of the DB clocks.
     // https://en.wikipedia.org/wiki/Swiss_railway_clock#Technology
+    // This should be called at the top of each minute
     clearInterval(secondIntervalId)
     secondIntervalId = setInterval(updateSecond, secondUpdateInterval)
 
@@ -112,6 +112,28 @@ function updateClock() {
 }
 
 
+
+function updateSecondHandUntilMinuteEnds() {
+    var secondHand = document.querySelector('#second-hand');
+    currentSecondAngle = Number(secondHand.style.transform.match(/\d+/)[0])
+    var currentSecond = (currentSecondAngle / 6) % 360
+
+    console.log("current seconds angle: " + currentSecondAngle)
+    console.log("current seconds: " + currentSecond)
+
+    if (currentSecond == 0) {
+        // stop
+    } else {
+        newSecondAngle = currentSecondAngle + 6
+        secondHand.style.transform = 'rotate('+ newSecondAngle +'deg)';
+
+        setTimeout(updateSecondHandForMinute, secondUpdateInterval);
+    }
+}
+
+
 setClock();
-updateClock();
-setInterval(updateClock, minuteUpdateInterval)
+updateSecondHandUntilMinuteEnds();
+//updateClock();
+//setInterval(updateClock, minuteUpdateInterval)
+
