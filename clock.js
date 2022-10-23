@@ -1,3 +1,13 @@
+
+const updateIntervalSeconds = 58.5;
+const secPerMinute = 60;
+const msPerSec = 1000;
+const oneTickAngleDiff = 6;
+
+secondUpdateInterval = (updateIntervalSeconds / secPerMinute) * msPerSec
+minuteUpdateInterval = secPerMinute * msPerSec
+
+
 function setClock() {
     const now = new Date();
 
@@ -9,8 +19,8 @@ function setClock() {
     console.log("minutes: " + now.getMinutes())
     console.log("hours: " + now.getHours())
 
-    secondAngle = 6 * now.getSeconds();
-    minuteAngle = 6 * now.getMinutes();
+    secondAngle = oneTickAngleDiff * now.getSeconds();
+    minuteAngle = oneTickAngleDiff * now.getMinutes();
     hourAngle = 30 * now.getHours();
 
     console.log("seconds angle: " + secondAngle)
@@ -25,7 +35,7 @@ function setClock() {
 function updateSecond() {
     var secondHand = document.querySelector('#second-hand');
     currentSecondAngle = Number(secondHand.style.transform.match(/\d+/)[0])
-    var currentSecond = (currentSecondAngle / 6) % 360
+    var currentSecond = (currentSecondAngle / oneTickAngleDiff) % secPerMinute
 
     console.log("current seconds angle: " + currentSecondAngle)
     console.log("current seconds: " + currentSecond)
@@ -46,7 +56,7 @@ function updateSecond() {
 function updateMinute() {
     var minuteHand = document.querySelector('#minute-hand');
     currentMinuteAngle = Number(minuteHand.style.transform.match(/\d+/)[0])
-    var currentMinute = (currentMinuteAngle / 6) % 60
+    var currentMinute = (currentMinuteAngle / oneTickAngleDiff) % secPerMinute
 
     console.log("current minute angle: " + currentMinuteAngle)
     console.log("current minute: " + currentMinute)
@@ -89,12 +99,7 @@ function updateHour() {
 
 
 
-const updateIntervalSeconds = 58.5;
-const secPerMinute = 60;
-const msPerSec = 1000;
 
-secondUpdateInterval = (updateIntervalSeconds / secPerMinute) * msPerSec
-minuteUpdateInterval = secPerMinute * msPerSec
 
 var secondIntervalId;
 
@@ -116,18 +121,18 @@ function updateClock() {
 function updateSecondHandUntilMinuteEnds() {
     var secondHand = document.querySelector('#second-hand');
     currentSecondAngle = Number(secondHand.style.transform.match(/\d+/)[0])
-    var currentSecond = (currentSecondAngle / 6) % 360
+    var currentSecond = (currentSecondAngle / oneTickAngleDiff) % secPerMinute
 
     console.log("current seconds angle: " + currentSecondAngle)
     console.log("current seconds: " + currentSecond)
 
-    if (currentSecond == 0) {
+    newSecondAngle = currentSecondAngle + oneTickAngleDiff
+    secondHand.style.transform = 'rotate('+ newSecondAngle +'deg)';
+
+    if (currentSecond == secPerMinute - 1) {
         // stop
     } else {
-        newSecondAngle = currentSecondAngle + 6
-        secondHand.style.transform = 'rotate('+ newSecondAngle +'deg)';
-
-        setTimeout(updateSecondHandForMinute, secondUpdateInterval);
+        setTimeout(updateSecondHandUntilMinuteEnds, secondUpdateInterval);
     }
 }
 
