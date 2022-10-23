@@ -67,6 +67,11 @@ function setClock() {
     hourHand.style.transform = 'rotate('+ hourAngle +'deg)';
 }
 
+// Sometime for js timing reasons updateSecondHandUntilMinuteEnds
+// is called while already running.
+// This helps us keep track and ignore that.
+var isSecondHandIncrementing = false;
+
 function updateSecondHandUntilMinuteEnds() {
     // Continually update the second hand position until it reaches 0 degrees.
     var secondHand = document.querySelector('#second-hand');
@@ -77,7 +82,8 @@ function updateSecondHandUntilMinuteEnds() {
     secondHand.style.transform = 'rotate('+ newSecondAngle +'deg)';
 
     if (currentSecond == secPerMinute - 1) {
-        // stop
+        isSecondHandIncrementing = false;
+        return; // stop
     } else {
         setTimeout(updateSecondHandUntilMinuteEnds, secondUpdateInterval);
     }
@@ -126,11 +132,16 @@ function timeUntilNextMinuteBoundary() {
 function runClock() {
     // This tries to imitate the 'master timed' behavior of the DB clocks.
     // https://en.wikipedia.org/wiki/Swiss_railway_clock#Technology
+    var now = new Date();
+    console.log("running runClock:" + now + " : " + now.getMilliseconds());
+
     updateMinute();
     updateHour();
     var timeUntilNextMinute = timeUntilNextMinuteBoundary();
 
     setTimeout(runClock, timeUntilNextMinute)
+
+    isSecondHandIncrementing = true;
     updateSecondHandUntilMinuteEnds();
 }
 
