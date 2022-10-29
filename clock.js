@@ -72,6 +72,16 @@ function setClock() {
 var isSecondHandIncrementing = false;
 
 function updateSecondHandUntilMinuteEnds() {
+    if (isSecondHandIncrementing) {
+        console.log("called twice")
+        return;
+    }
+
+    isSecondHandIncrementing = true;
+    updateSecondHandUntilMinuteEndsTick();
+}
+
+function updateSecondHandUntilMinuteEndsTick() {
     // Continually update the second hand position until it reaches 0 degrees.
     var secondHand = document.querySelector('#second-hand');
     var currentSecondAngle = Number(secondHand.style.transform.match(/\d+/)[0]);
@@ -84,7 +94,7 @@ function updateSecondHandUntilMinuteEnds() {
         isSecondHandIncrementing = false;
         return; // stop
     } else {
-        setTimeout(updateSecondHandUntilMinuteEnds, secondUpdateInterval);
+        setTimeout(updateSecondHandUntilMinuteEndsTick, secondUpdateInterval);
     }
 }
 
@@ -152,7 +162,6 @@ function runClock() {
 
     setTimeout(runClock, timeUntilNextMinute)
 
-    isSecondHandIncrementing = true;
     updateSecondHandUntilMinuteEnds();
 }
 
