@@ -18,14 +18,14 @@ body {
     position: absolute;   
     z-index: 2;
     height:70%;
-    transition: transform 1.2s ease-in-out;
+    transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);;
 }
 
 .minute-hand {
     position: absolute;   
     z-index: 3;
     height:70%;
-    transition: transform 1.2s ease-in-out;
+    transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);;
 }
 
 .second-hand {
