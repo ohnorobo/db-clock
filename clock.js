@@ -34,7 +34,6 @@ function calculateMinutesAngle() {
     // Get current angle for the minute hand out of 360 degrees
     const now = new Date();
     var minutes = now.getMinutes();
-    console.log("minutes: " + minutes);
     return minutes * oneTickAngleDiff;
 }
 
@@ -43,8 +42,6 @@ function calculateHourAngle() {
     const now = new Date();
     var hours = now.getHours();
     var minutes = now.getMinutes();
-    console.log("hours: " + hours);
-    console.log("additional hour diff: " + hoursAdditionalMinuteAngleDiff * now.getMinutes());
     return (hourAngleDiff * (hours % 12)) + (hoursAdditionalMinuteAngleDiff * minutes);
 }
 
@@ -98,6 +95,25 @@ function updateSecondHandUntilMinuteEndsTick() {
     }
 }
 
+function updateSecond() {
+    var secondHand = document.querySelector('#second-hand');
+    
+    // Angle of the current second hand.
+    // This can to arbitrarily above 360 as the hand keeps rotating.
+    var oldSecondAngle = Number(secondHand.style.transform.match(/\d+/)[0])
+
+    // New angle the second hand should be at out of 360
+    var newSecondAngleMod360 = calculateSecondsAngle();
+
+    diff = (newSecondAngleMod360 - (oldSecondAngle % circleDegrees));
+    if (diff < 0) {diff = diff + circleDegrees;}
+    newSecondAngle = oldSecondAngle + diff;
+
+    console.log("second values:" + oldSecondAngle + " " + newSecondAngleMod360 + " " + diff + " " + newSecondAngle);
+
+    secondHand.style.transform = 'rotate('+ newSecondAngle +'deg)';
+}
+
 function updateMinute() {
     var minuteHand = document.querySelector('#minute-hand');
     
@@ -111,8 +127,6 @@ function updateMinute() {
     diff = (newMinuteAngleMod360 - (oldMinuteAngle % circleDegrees));
     if (diff < 0) {diff = diff + circleDegrees;}
     newMinuteAngle = oldMinuteAngle + diff;
-
-    console.log("minute values:" + oldMinuteAngle + " " + newMinuteAngleMod360 + " " + diff + " " + newMinuteAngle);
 
     minuteHand.style.transform = 'rotate('+ newMinuteAngle +'deg)';
 }
@@ -130,8 +144,6 @@ function updateHour() {
     diff = (newHourAngleMod360 - (oldHourAngle % circleDegrees));
     if (diff < 0) {diff = diff + circleDegrees;}
     newHourAngle = oldHourAngle + diff;
-
-    console.log("hour values:" + oldHourAngle + " " + newHourAngleMod360 + " " + diff + " " + newHourAngle);
 
     hourHand.style.transform = 'rotate('+ newHourAngle +'deg)';
 }
@@ -165,5 +177,15 @@ function runClock() {
     updateSecondHandUntilMinuteEnds();
 }
 
+function resetClock() {
+    updateSecond();
+    updateMinute();
+    updateHour();
+}
+
 setClock();
 runClock();
+
+// js timing gets weird if the tab doesn't have focus
+// if we regain focus reset the clock to keep things from being too off
+window.onfocus = resetClock;
