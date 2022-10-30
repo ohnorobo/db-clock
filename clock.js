@@ -10,7 +10,6 @@ const msPerSec = 1000;
 // The second hand runs slightly fast
 // https://en.wikipedia.org/wiki/Swiss_railway_clock#Technology
 const updateIntervalSeconds = 58.5;
-//const updateIntervalSeconds = 60*3;
 
 // A deflection of one minute/second tick on the clock
 const oneTickAngleDiff = circleDegrees / minPerHour;
