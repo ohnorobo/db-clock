@@ -27,10 +27,8 @@ function calculateSecondsAngle() {
     // Get current angle for the second hand out of 360 degrees
     const now = new Date();
     var seconds = now.getSeconds();
-    console.log("seconds: " + seconds);
     // The second hand runs slightly fast
     var fastSeconds = Math.round(seconds * (secPerMinute / updateIntervalSeconds));
-    console.log("fast seconds: " + fastSeconds);
     return fastSeconds * oneTickAngleDiff;
 }
 
@@ -57,10 +55,6 @@ function setClock() {
     var secondAngle = calculateSecondsAngle();
     var minuteAngle = calculateMinutesAngle();
     var hourAngle = calculateHourAngle()
-
-    console.log("seconds angle: " + secondAngle)
-    console.log("minutes angle: " + minuteAngle)
-    console.log("hours angle: " + hourAngle)
 
     secondHand.style.transform = 'rotate('+ secondAngle +'deg)';
     minuteHand.style.transform = 'rotate('+ minuteAngle +'deg)';
@@ -114,7 +108,6 @@ var isSecondHandIncrementing = false;
 
 function updateSecondHandUntilMinuteEnds() {
     if (isSecondHandIncrementing) {
-        console.log("called twice")
         return;
     }
 
@@ -153,8 +146,6 @@ function updateSecond() {
     // If we're <= 10 seconds behind we adjust backwards, otherwise forward.
     if (diff < -10 * oneTickAngleDiff) {diff = diff + circleDegrees;}
     newSecondAngle = oldSecondAngle + diff;
-
-    console.log("second values:" + oldSecondAngle + " " + newSecondAngleMod360 + " " + diff + " " + newSecondAngle);
 
     setHandAngle(secondHand, newSecondAngle);
 }
@@ -210,8 +201,7 @@ function runClock() {
     // This tries to imitate the 'master timed' behavior of the DB clocks.
     // https://en.wikipedia.org/wiki/Swiss_railway_clock#Technology
     var now = new Date();
-    console.log("running runClock:" + now + " : " + now.getMilliseconds());
-    // In theory in every call of this except the first one ms should be near 0 or 1000
+    // In theory in every call of this except the first one ms should be near 0 or 1000 ms
 
     updateMinute();
     updateHour();
