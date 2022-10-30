@@ -7,9 +7,10 @@ const minPerHour = 60;
 const hoursPerClockCycle = 12;
 const msPerSec = 1000;
 
-// The minute hand runs slightly fast
+// The second hand runs slightly fast
 // https://en.wikipedia.org/wiki/Swiss_railway_clock#Technology
 const updateIntervalSeconds = 58.5;
+//const updateIntervalSeconds = 60*3;
 
 // A deflection of one minute/second tick on the clock
 const oneTickAngleDiff = circleDegrees / minPerHour;
@@ -66,6 +67,46 @@ function setClock() {
     hourHand.style.transform = 'rotate('+ hourAngle +'deg)';
 }
 
+function setHandAngle(hand, angle) {
+    hand.style.transform = 'rotate('+ angle +'deg)'; 
+}
+
+function setHandAngleClosure(hand, angle) {
+    // Angle setting function to be called as a closure
+    return(function() {
+        setHandAngle(hand, angle)
+    })
+}
+
+function rotateElastic(hand, oldAngle, newAngle) {
+    // Rotate the hand element
+    // Over 2 seconds, between oldAngle and newAngle
+    overallTime = 2 * msPerSec;
+
+    // See https://easings.net/#easeOutElastic
+    // Unfortunatly rotate doesn't work with css keyframes
+    // so we're stuck with this
+    var elasticMovements = [
+        // fraction of animation, fraction of motion
+        [.16, 1.3227],
+        [.28, .8688],
+        [.44, 1.0463],
+        [.59, .9836],
+        [.73, 1.0058],
+        [.88, .998],
+        [1,   1]
+    ]
+
+    for (var i = 0; i < elasticMovements.length; i++) {
+        var timeFraction = elasticMovements[i][0];
+        var motionFraction = elasticMovements[i][1];
+        var time = overallTime * timeFraction;
+        var angle = ((newAngle - oldAngle) * motionFraction) + oldAngle;
+
+        setTimeout(setHandAngleClosure(hand, angle), time);
+    }
+}
+
 // Sometime for js timing reasons updateSecondHandUntilMinuteEnds
 // is called while already running.
 // This helps us keep track and ignore that.
@@ -88,7 +129,7 @@ function updateSecondHandUntilMinuteEndsTick() {
     var currentSecond = (currentSecondAngle / oneTickAngleDiff) % secPerMinute;
 
     newSecondAngle = currentSecondAngle + oneTickAngleDiff;
-    secondHand.style.transform = 'rotate('+ newSecondAngle +'deg)';
+    setHandAngle(secondHand, newSecondAngle);
 
     if (currentSecond == secPerMinute - 1) {
         isSecondHandIncrementing = false;
@@ -115,7 +156,7 @@ function updateSecond() {
 
     console.log("second values:" + oldSecondAngle + " " + newSecondAngleMod360 + " " + diff + " " + newSecondAngle);
 
-    secondHand.style.transform = 'rotate('+ newSecondAngle +'deg)';
+    setHandAngle(secondHand, newSecondAngle);
 }
 
 function updateMinute() {
@@ -132,7 +173,7 @@ function updateMinute() {
     if (diff < 0) {diff = diff + circleDegrees;}
     newMinuteAngle = oldMinuteAngle + diff;
 
-    minuteHand.style.transform = 'rotate('+ newMinuteAngle +'deg)';
+    rotateElastic(minuteHand, oldMinuteAngle, newMinuteAngle);
 }
 
 function updateHour() {
@@ -149,7 +190,7 @@ function updateHour() {
     if (diff < 0) {diff = diff + circleDegrees;}
     newHourAngle = oldHourAngle + diff;
 
-    hourHand.style.transform = 'rotate('+ newHourAngle +'deg)';
+    rotateElastic(hourHand, oldHourAngle, newHourAngle);
 }
 
 function timeUntilNextMinuteBoundary() {
@@ -176,7 +217,7 @@ function runClock() {
     updateHour();
     var timeUntilNextMinute = timeUntilNextMinuteBoundary();
 
-    setTimeout(runClock, timeUntilNextMinute)
+    setTimeout(runClock, timeUntilNextMinute);
 
     updateSecondHandUntilMinuteEnds();
 }
