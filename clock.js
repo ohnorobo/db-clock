@@ -74,21 +74,25 @@ function setHandAngleClosure(hand, angle) {
 
 function rotateElastic(hand, oldAngle, newAngle) {
     // Rotate the hand element
-    // Over 2 seconds, between oldAngle and newAngle
-    overallTime = 2 * msPerSec;
+    // Over 1.2 seconds, between oldAngle and newAngle
+    // approximate the damping function
+    // y(t) = -(e^(-t)cos(pi2t)) + 1
+    // we want 8 mins + maxes, so the period for t is 4.
+    overallTime = 1.2 * msPerSec;
 
     // See https://easings.net/#easeOutElastic
     // Unfortunatly rotate doesn't work with css keyframes
     // so we're stuck with this
     var elasticMovements = [
         // fraction of animation, fraction of motion
-        [.16, 1.3227],
-        [.28, .8688],
-        [.44, 1.0463],
-        [.59, .9836],
-        [.73, 1.0058],
-        [.88, .998],
-        [1,   1]
+        [1/8, 1.6065],
+        [2/8, 0.6321],
+        [3/8, 1.2231],
+        [4/8, 0.8646],
+        [5/8, 1.0821],
+        [6/8, 0.9502],
+        [7/8, 1.0302],
+        [1,   1],
     ]
 
     for (var i = 0; i < elasticMovements.length; i++) {
