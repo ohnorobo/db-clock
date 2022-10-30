@@ -16,15 +16,14 @@ body {
      width:70%;
 }
 
-.hour-hand {
+.logo {
     position: absolute;   
     z-index: 2;
     height:70%;
     width:70%;
-    transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-.minute-hand {
+.hour-hand {
     position: absolute;   
     z-index: 3;
     height:70%;
@@ -32,9 +31,17 @@ body {
     transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-.second-hand {
+.minute-hand {
     position: absolute;   
     z-index: 4;
+    height:70%;
+    width:70%;
+    transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.second-hand {
+    position: absolute;   
+    z-index: 5;
     height:70%;
     width:70%;
     transition: transform 1.2s cubic-bezier(.35,.11,.18,.92);
@@ -42,7 +49,7 @@ body {
 
 .barrel {
     position: absolute;   
-    z-index: 5;
+    z-index: 6;
     height:70%;
     width:70%;
 }
