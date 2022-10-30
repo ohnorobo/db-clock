@@ -37,7 +37,7 @@ body {
     z-index: 4;
     height:70%;
     width:70%;
-    transition: transform 1.2s ease-in-out;
+    transition: transform 1.2s cubic-bezier(.35,.11,.18,.92);
 }
 
 .barrel {
