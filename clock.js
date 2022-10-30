@@ -27,7 +27,10 @@ function calculateSecondsAngle() {
     const now = new Date();
     var seconds = now.getSeconds();
     console.log("seconds: " + seconds);
-    return seconds * oneTickAngleDiff;
+    // The second hand runs slightly fast
+    var fastSeconds = Math.round(seconds * (secPerMinute / updateIntervalSeconds));
+    console.log("fast seconds: " + fastSeconds);
+    return fastSeconds * oneTickAngleDiff;
 }
 
 function calculateMinutesAngle() {
@@ -106,7 +109,8 @@ function updateSecond() {
     var newSecondAngleMod360 = calculateSecondsAngle();
 
     diff = (newSecondAngleMod360 - (oldSecondAngle % circleDegrees));
-    if (diff < 0) {diff = diff + circleDegrees;}
+    // If we're <= 10 seconds behind we adjust backwards, otherwise forward.
+    if (diff < -10 * oneTickAngleDiff) {diff = diff + circleDegrees;}
     newSecondAngle = oldSecondAngle + diff;
 
     console.log("second values:" + oldSecondAngle + " " + newSecondAngleMod360 + " " + diff + " " + newSecondAngle);
@@ -181,6 +185,8 @@ function resetClock() {
     updateSecond();
     updateMinute();
     updateHour();
+    // Start second hand if it's stopped
+    updateSecondHandUntilMinuteEnds();
 }
 
 setClock();
