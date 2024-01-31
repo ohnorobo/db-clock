@@ -17,8 +17,6 @@ const FPS = 30;
 // The second hand runs slightly fast
 // https://en.wikipedia.org/wiki/Swiss_railway_clock#Technology
 const updateIntervalSeconds = 58.5;
-// Some extra time to not pause the second hand abruptly at the top
-const pauseBufferSec = .5;
 // How long the minute and hour hand wobble when they move
 const wobbleLengthSec = 1.2;
 
@@ -49,85 +47,85 @@ function dampedSpring(t) {
 function baseSecondAngle(seconds) {
     // Get current angle for the second hand out of 360 degrees
     // Pause at the top
-    return Math.min(fastSeconds * oneTickAngleDiff, circleDegrees);
+    return Math.min(seconds * oneTickAngleDiff, circleDegrees);
 }
 
 function baseMinuteAngle(now) {
     // Get current angle for the minute hand out of 360 degrees
-    minutes = now.getMinutes();
+    var minutes = now.getMinutes();
     return minutes * oneTickAngleDiff;
 }
 
 function baseHourAngle(now) {
     // Get current angle for the hour hand out of 360 degrees
-    hours = now.getHours();
-    minutes = now.getMinutes();
+    var hours = now.getHours();
+    var minutes = now.getMinutes();
     return (hourAngleDiff * (hours % hoursPerClockCycle)) + (hoursAdditionalMinuteAngleDiff * minutes);
 }
 
 function calculateSecondsAngle(now) {
-    seconds = now.getSeconds();
-    milliseconds = now.getMilliseconds();
+    var seconds = now.getSeconds();
+    var milliseconds = now.getMilliseconds();
+    var msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
 
     // The second hand runs slightly fast
-    fastSeconds = Math.round(seconds * (secPerMinute / updateIntervalSeconds));
-    fastMilliseconds = Math.round(milliseconds * (secPerMinute / updateIntervalSeconds));
+    var fastMsPastMinuteStart = Math.round(msPastMinuteStart * (secPerMinute / updateIntervalSeconds));
+    var fastMilliseconds = fastMsPastMinuteStart % msPerSec;
+    var fastSeconds = Math.round((fastMsPastMinuteStart - fastMilliseconds) / msPerSec);
 
-    secondAngle = baseSecondAngle(fastSeconds);
-    
-    fastMsPastMinuteStart = (fastSeconds * msPerSec + fastMilliseconds);
+    var secondAngle = baseSecondAngle(fastSeconds);
 
     // Pause at the top
     if (fastMsPastMinuteStart >= secPerMinute * msPerSec) {
         secondAngle = 0;
     } else {
         // Otherwise ease between seconds
-        secondFraction = fastMilliseconds / msPerSec;
+        var secondFraction = fastMilliseconds / msPerSec;
         secondAngle = secondAngle + oneTickAngleDiff * cubicBezierEase(secondFraction);
     }
     return secondAngle;
 }
 
 function calculateMinutesAngle(now) {
-    minuteAngle = baseMinuteAngle(now);
-    msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
+    var minuteAngle = baseMinuteAngle(now);
+    var msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
 
     if (msPastMinuteStart <= wobbleLengthSec * msPerSec) {
         // How much of the wobble time is completed [0,1]
-        wobble_fraction = msPastMinuteStart / (msPerSec * wobbleLengthSec);
+        var wobble_fraction = msPastMinuteStart / (msPerSec * wobbleLengthSec);
         // x value of wobble [0,1+] where 1 is the ending point
-        wobble = dampedSpring(wobble_fraction);
+        var wobble = dampedSpring(wobble_fraction);
 
-        minuteAngle = minuteAngle + oneTickAngleDiff * (wobble - 1);
+        var minuteAngle = minuteAngle + oneTickAngleDiff * (wobble - 1);
     }    
     return minuteAngle
 }
 
 function calculateHourAngle(now) {
-    hourAngle = baseHourAngle(now);
-    msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
+    var hourAngle = baseHourAngle(now);
+    var msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
 
     if (msPastMinuteStart <= wobbleLengthSec * msPerSec) {
         // How much of the wobble time is completed [0,1]
-        wobble_fraction = msPastMinuteStart / (msPerSec * wobbleLengthSec);
+        var wobble_fraction = msPastMinuteStart / (msPerSec * wobbleLengthSec);
         // x value of wobble [0,1+] where 1 is the ending point
-        wobble = dampedSpring(wobble_fraction);
+        var wobble = dampedSpring(wobble_fraction);
 
-        hourAngle = hourAngle + hoursAdditionalMinuteAngleDiff * (wobble - 1);
+        var hourAngle = hourAngle + hoursAdditionalMinuteAngleDiff * (wobble - 1);
     }    
     return hourAngle
 }
 
 function setClock() {
-    secondHand = document.querySelector('#second-hand');
-    minuteHand = document.querySelector('#minute-hand');
-    hourHand = document.querySelector('#hour-hand');
+    var secondHand = document.querySelector('#second-hand');
+    var minuteHand = document.querySelector('#minute-hand');
+    var hourHand = document.querySelector('#hour-hand');
 
-    now = new Date();
+    var now = new Date();
 
-    secondAngle = calculateSecondsAngle(now);
-    minuteAngle = calculateMinutesAngle(now);
-    hourAngle = calculateHourAngle(now)
+    var secondAngle = calculateSecondsAngle(now);
+    var minuteAngle = calculateMinutesAngle(now);
+    var hourAngle = calculateHourAngle(now)
 
     secondHand.style.transform = 'rotate('+ secondAngle +'deg)';
     minuteHand.style.transform = 'rotate('+ minuteAngle +'deg)';
