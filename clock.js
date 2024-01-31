@@ -46,12 +46,9 @@ function dampedSpring(t) {
     return -1 * amplitude * Math.pow((1 - dampening), t) * Math.cos((num_peaks + .5) * Math.PI * t) + 1
 }
 
-function baseSecondAngle(now) {
+function baseSecondAngle(seconds) {
     // Get current angle for the second hand out of 360 degrees
-    seconds = now.getSeconds();
-    // The second hand runs slightly fast
-    fastSeconds = Math.round(seconds * (secPerMinute / updateIntervalSeconds));
-    // but pauses at the top
+    // Pause at the top
     return Math.min(fastSeconds * oneTickAngleDiff, circleDegrees);
 }
 
@@ -69,15 +66,23 @@ function baseHourAngle(now) {
 }
 
 function calculateSecondsAngle(now) {
-    secondAngle = baseSecondAngle(now);
-    msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
+    seconds = now.getSeconds();
+    milliseconds = now.getMilliseconds();
+
+    // The second hand runs slightly fast
+    fastSeconds = Math.round(seconds * (secPerMinute / updateIntervalSeconds));
+    fastMilliseconds = Math.round(milliseconds * (secPerMinute / updateIntervalSeconds));
+
+    secondAngle = baseSecondAngle(fastSeconds);
+    
+    fastMsPastMinuteStart = (fastSeconds * msPerSec + fastMilliseconds);
 
     // Pause at the top
-    if (msPastMinuteStart >= (updateIntervalSeconds + pauseBufferSec) * msPerSec) {
+    if (fastMsPastMinuteStart >= secPerMinute * msPerSec) {
         secondAngle = 0;
     } else {
         // Otherwise ease between seconds
-        secondFraction = now.getMilliseconds() / msPerSec;
+        secondFraction = fastMilliseconds / msPerSec;
         secondAngle = secondAngle + oneTickAngleDiff * cubicBezierEase(secondFraction);
     }
     return secondAngle;
