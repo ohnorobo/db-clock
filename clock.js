@@ -44,9 +44,12 @@ function dampedSpring(t) {
     return -1 * amplitude * Math.pow((1 - dampening), t) * Math.cos((num_peaks + .5) * Math.PI * t) + 1
 }
 
+function getMsPastMinuteStart(now) {
+    return now.getSeconds() * msPerSec + now.getMilliseconds();
+}
+
 function baseSecondAngle(seconds) {
     // Get current angle for the second hand out of 360 degrees
-    // Pause at the top
     return Math.min(seconds * oneTickAngleDiff, circleDegrees);
 }
 
@@ -64,9 +67,7 @@ function baseHourAngle(now) {
 }
 
 function calculateSecondsAngle(now) {
-    var seconds = now.getSeconds();
-    var milliseconds = now.getMilliseconds();
-    var msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
+    var msPastMinuteStart = getMsPastMinuteStart(now);
 
     // The second hand runs slightly fast
     var fastMsPastMinuteStart = Math.round(msPastMinuteStart * (secPerMinute / updateIntervalSeconds));
@@ -88,7 +89,7 @@ function calculateSecondsAngle(now) {
 
 function calculateMinutesAngle(now) {
     var minuteAngle = baseMinuteAngle(now);
-    var msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
+    var msPastMinuteStart = getMsPastMinuteStart(now);
 
     if (msPastMinuteStart <= wobbleLengthSec * msPerSec) {
         // How much of the wobble time is completed [0,1]
@@ -103,7 +104,7 @@ function calculateMinutesAngle(now) {
 
 function calculateHourAngle(now) {
     var hourAngle = baseHourAngle(now);
-    var msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
+    var msPastMinuteStart = getMsPastMinuteStart(now);
 
     if (msPastMinuteStart <= wobbleLengthSec * msPerSec) {
         // How much of the wobble time is completed [0,1]
