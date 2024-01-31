@@ -18,7 +18,7 @@ const FPS = 40;
 // https://en.wikipedia.org/wiki/Swiss_railway_clock#Technology
 const updateIntervalSeconds = 58.5;
 // Some extra time to not pause the second hand abruptly at the top
-const pauseBufferMs = 250;
+const pauseBufferSec = .5;
 // How long the minute and hour hand wobble when they move
 const wobbleLengthSec = 1.2;
 
@@ -73,7 +73,7 @@ function calculateSecondsAngle(now) {
     var msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
 
     // Pause at the top
-    if (msPastMinuteStart >= updateIntervalSeconds * msPerSec + pauseBufferMs) {
+    if (msPastMinuteStart >= (updateIntervalSeconds + pauseBufferSec) * msPerSec) {
         secondAngle = 0;
     } else {
         // Otherwise ease between seconds
