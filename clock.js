@@ -11,7 +11,7 @@ const hoursPerClockCycle = 12;
 const msPerSec = 1000;
 
 // Don't set the framerate too high or animation timing can get messed up
-const FPS = 60;
+const FPS = 40;
 
 // How long it takes the second hand to circle the clock in seconds
 // The second hand runs slightly fast
@@ -39,8 +39,8 @@ const cubicBezierEase = bezier(.35,.11,.18,.92);
 
 function dampedSpring(t) {
     // A damped spring that moves from 0 to 1 in the domain t=[0,1] and bounces n times
-    const amplitude = .75;
-    const dampening = .9; // [0,1], 0 = no dampening, 1 = infinite dampening
+    const amplitude = .75;  // At this amplitude the first peak is around 1.6
+    const dampening = .97; // [0,1], 0 = no dampening, 1 = infinite dampening
     const num_peaks = 7;
 
     return -1 * amplitude * Math.pow((1 - dampening), t) * Math.cos((num_peaks + .5) * Math.PI * t) + 1
@@ -129,4 +129,5 @@ function setClock() {
     hourHand.style.transform = 'rotate('+ hourAngle +'deg)';
 }
 
+setClock();
 setInterval(setClock, msPerSec/FPS);
