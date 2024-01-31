@@ -39,7 +39,7 @@ const cubicBezierEase = bezier(.35,.11,.18,.92);
 
 function dampedSpring(t) {
     // A damped spring that moves from 0 to 1 in the domain t=[0,1] and bounces n times
-    const amplitude = .75;  // At this amplitude the first peak is around 1.6
+    const amplitude = 1;  // At this amplitude the first peak is around 1.6
     const dampening = .97; // [0,1], 0 = no dampening, 1 = infinite dampening
     const num_peaks = 7;
 
