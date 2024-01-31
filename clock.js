@@ -11,7 +11,7 @@ const hoursPerClockCycle = 12;
 const msPerSec = 1000;
 
 // Don't set the framerate too high or animation timing can get messed up
-const FPS = 40;
+const FPS = 30;
 
 // How long it takes the second hand to circle the clock in seconds
 // The second hand runs slightly fast
@@ -39,7 +39,7 @@ const cubicBezierEase = bezier(.35,.11,.18,.92);
 
 function dampedSpring(t) {
     // A damped spring that moves from 0 to 1 in the domain t=[0,1] and bounces n times
-    const amplitude = 1;  // At this amplitude the first peak is around 1.6
+    const amplitude = .5;  // At this amplitude the first peak is around 1.3
     const dampening = .97; // [0,1], 0 = no dampening, 1 = infinite dampening
     const num_peaks = 7;
 
@@ -48,50 +48,50 @@ function dampedSpring(t) {
 
 function baseSecondAngle(now) {
     // Get current angle for the second hand out of 360 degrees
-    var seconds = now.getSeconds();
+    seconds = now.getSeconds();
     // The second hand runs slightly fast
-    var fastSeconds = Math.round(seconds * (secPerMinute / updateIntervalSeconds));
+    fastSeconds = Math.round(seconds * (secPerMinute / updateIntervalSeconds));
     // but pauses at the top
     return Math.min(fastSeconds * oneTickAngleDiff, circleDegrees);
 }
 
 function baseMinuteAngle(now) {
     // Get current angle for the minute hand out of 360 degrees
-    var minutes = now.getMinutes();
+    minutes = now.getMinutes();
     return minutes * oneTickAngleDiff;
 }
 
 function baseHourAngle(now) {
     // Get current angle for the hour hand out of 360 degrees
-    var hours = now.getHours();
-    var minutes = now.getMinutes();
+    hours = now.getHours();
+    minutes = now.getMinutes();
     return (hourAngleDiff * (hours % hoursPerClockCycle)) + (hoursAdditionalMinuteAngleDiff * minutes);
 }
 
 function calculateSecondsAngle(now) {
-    var secondAngle = baseSecondAngle(now);
-    var msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
+    secondAngle = baseSecondAngle(now);
+    msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
 
     // Pause at the top
     if (msPastMinuteStart >= (updateIntervalSeconds + pauseBufferSec) * msPerSec) {
         secondAngle = 0;
     } else {
         // Otherwise ease between seconds
-        var secondFraction = now.getMilliseconds() / msPerSec;
+        secondFraction = now.getMilliseconds() / msPerSec;
         secondAngle = secondAngle + oneTickAngleDiff * cubicBezierEase(secondFraction);
     }
     return secondAngle;
 }
 
 function calculateMinutesAngle(now) {
-    var minuteAngle = baseMinuteAngle(now);
-    var msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
+    minuteAngle = baseMinuteAngle(now);
+    msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
 
     if (msPastMinuteStart <= wobbleLengthSec * msPerSec) {
         // How much of the wobble time is completed [0,1]
-        var wobble_fraction = msPastMinuteStart / (msPerSec * wobbleLengthSec);
+        wobble_fraction = msPastMinuteStart / (msPerSec * wobbleLengthSec);
         // x value of wobble [0,1+] where 1 is the ending point
-        var wobble = dampedSpring(wobble_fraction);
+        wobble = dampedSpring(wobble_fraction);
 
         minuteAngle = minuteAngle + oneTickAngleDiff * (wobble - 1);
     }    
@@ -99,14 +99,14 @@ function calculateMinutesAngle(now) {
 }
 
 function calculateHourAngle(now) {
-    var hourAngle = baseHourAngle(now);
-    var msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
+    hourAngle = baseHourAngle(now);
+    msPastMinuteStart = (now.getSeconds() * msPerSec + now.getMilliseconds());
 
     if (msPastMinuteStart <= wobbleLengthSec * msPerSec) {
         // How much of the wobble time is completed [0,1]
-        var wobble_fraction = msPastMinuteStart / (msPerSec * wobbleLengthSec);
+        wobble_fraction = msPastMinuteStart / (msPerSec * wobbleLengthSec);
         // x value of wobble [0,1+] where 1 is the ending point
-        var wobble = dampedSpring(wobble_fraction);
+        wobble = dampedSpring(wobble_fraction);
 
         hourAngle = hourAngle + hoursAdditionalMinuteAngleDiff * (wobble - 1);
     }    
@@ -114,15 +114,15 @@ function calculateHourAngle(now) {
 }
 
 function setClock() {
-    var secondHand = document.querySelector('#second-hand');
-    var minuteHand = document.querySelector('#minute-hand');
-    var hourHand = document.querySelector('#hour-hand');
+    secondHand = document.querySelector('#second-hand');
+    minuteHand = document.querySelector('#minute-hand');
+    hourHand = document.querySelector('#hour-hand');
 
-    var now = new Date();
+    now = new Date();
 
-    var secondAngle = calculateSecondsAngle(now);
-    var minuteAngle = calculateMinutesAngle(now);
-    var hourAngle = calculateHourAngle(now)
+    secondAngle = calculateSecondsAngle(now);
+    minuteAngle = calculateMinutesAngle(now);
+    hourAngle = calculateHourAngle(now)
 
     secondHand.style.transform = 'rotate('+ secondAngle +'deg)';
     minuteHand.style.transform = 'rotate('+ minuteAngle +'deg)';
