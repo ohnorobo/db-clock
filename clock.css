@@ -29,7 +29,6 @@ body {
     z-index: 3;
     height:70%;
     width:70%;
-    transition: transform .2s ease-in-out;
 }
 
 .minute-hand {
@@ -37,7 +36,6 @@ body {
     z-index: 4;
     height:70%;
     width:70%;
-    transition: transform .2s ease-in-out;
 }
 
 .second-hand {
@@ -45,7 +43,6 @@ body {
     z-index: 5;
     height:70%;
     width:70%;
-    transition: transform 1.2s cubic-bezier(.35,.11,.18,.92);
 }
 
 .barrel {
